@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option go_package = "/token";
+
+import "google/api/annotations.proto";
+
+message GenerateTokenRequest {
+    string client_id = 1;
+    string client_secret = 2;
+    string user_id = 3;
+    string expiry = 4;
+    bool one_time = 5;
+    repeated string scope = 6;
+    repeated string ip_address = 7;
+}
+
+message GenerateTokenResponse {
+    string error = 1;
+    int32 error_code = 2;
+    int32 expired_in = 3;
+    repeated string scope = 4;
+    string status = 5;
+    string token = 6;
+    string token_type = 7;
+}
+
+message ValidateTokenRequest {
+    string token = 1;
+    string key = 2;
+    string client_ip = 3;
+}
+
+message ValidateTokenResponse {
+    TokenData data = 1;
+    string error = 2;
+    int32 error_code = 3;
+    string status = 4;
+}
+
+message TokenData {
+    string client_id = 1;
+    string user_id = 2;
+    repeated string scope = 3;
+    repeated string ip_address = 4;
+    bool one_time = 5;
+}
+
+service Token {
+    rpc GenerateToken(GenerateTokenRequest) returns (GenerateTokenResponse) {
+        option (google.api.http) = {
+            post: "/v1/token/generate",
+            body: "*"
+        };
+    }
+
+    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {
+        option (google.api.http) = {
+            post: "/v1/token/validate",
+            body: "*"
+        };
+    }
+}
